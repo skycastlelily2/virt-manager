@@ -1114,12 +1114,20 @@ class vmmDetails(vmmGObjectUI):
         dialog.set_disk(disk)
         dialog.show(self.topwin, self.vm)
 
+    def remove_non_disk(self, devobj):
+        if not self.err.chkbox_helper(self.config.get_confirm_removedev,
+                self.config.set_confirm_removedev,
+                text1=(_("Are you sure you want to remove this device?"))):
+            return
+        self.remove_device(devobj)
+    
+
     def remove_xml_dev(self, src_ignore):
         devobj = self.get_hw_row()[HW_LIST_COL_DEVICE]
         if devobj.DEVICE_TYPE == "disk":
             self.remove_disk(devobj)
         else:
-            self.remove_device(devobj)
+            self.remove_non_disk(devobj)
 
 
     ############################
@@ -1933,11 +1941,6 @@ class vmmDetails(vmmGObjectUI):
     # Device removal
     def remove_device(self, devobj):
         log.debug("Removing device: %s", devobj)
-
-        if not self.err.chkbox_helper(self.config.get_confirm_removedev,
-                self.config.set_confirm_removedev,
-                text1=(_("Are you sure you want to remove this device?"))):
-            return
 
         # Define the change
         try:
